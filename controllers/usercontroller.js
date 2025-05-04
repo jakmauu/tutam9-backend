@@ -49,30 +49,31 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log(`Attempting login for user: ${username}`);
+    console.log(`Mencoba login untuk pengguna: ${username}`);
 
-    // Check if user exists
+    // Cek apakah pengguna ada
     const user = await User.findOne({ username });
     if (!user) {
-      console.log('User not found');
+      console.log('Pengguna tidak ditemukan');
       return res.status(400).json({ message: 'Username atau password tidak valid' });
     }
 
-    // Check password
-    console.log('Comparing passwords...');
+    // Cek password
+    console.log('Membandingkan password...');
     const isMatch = await user.comparePassword(password);
-    console.log('Password match result:', isMatch);
+    console.log('Hasil pencocokan password:', isMatch);
     
     if (!isMatch) {
       return res.status(400).json({ message: 'Username atau password tidak valid' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET || 'assignment_tracker_secret_key',
-      { expiresIn: '1d' }
-    );
+    // Generate token JWT dengan logging yang lebih baik
+    const tokenPayload = { userId: user._id };
+    const secret = process.env.JWT_SECRET || 'assignment_tracker_secret_key';
+    console.log('Membuat token dengan panjang secret:', secret.length);
+    
+    const token = jwt.sign(tokenPayload, secret, { expiresIn: '1d' });
+    console.log('Token berhasil dibuat');
 
     res.json({
       message: 'Login berhasil',
@@ -81,8 +82,8 @@ exports.login = async (req, res) => {
       username: user.username
     });
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Detail error login:', err);
+    res.status(500).json({ message: 'Server error: ' + err.message });
   }
 };
 
