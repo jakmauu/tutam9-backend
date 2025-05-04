@@ -49,15 +49,20 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log(`Attempting login for user: ${username}`);
 
     // Check if user exists
     const user = await User.findOne({ username });
     if (!user) {
+      console.log('User not found');
       return res.status(400).json({ message: 'Username atau password tidak valid' });
     }
 
     // Check password
+    console.log('Comparing passwords...');
     const isMatch = await user.comparePassword(password);
+    console.log('Password match result:', isMatch);
+    
     if (!isMatch) {
       return res.status(400).json({ message: 'Username atau password tidak valid' });
     }
@@ -65,7 +70,7 @@ exports.login = async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET || 'assignment_tracker_secret',
+      process.env.JWT_SECRET || 'assignment_tracker_secret_key',
       { expiresIn: '1d' }
     );
 
