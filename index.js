@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
   // Update CORS untuk mengizinkan frontend Vercel
-  origin: ['http://localhost:5173', 'https://tutam9-frontend.vercel.app', '*'],
+  origin: [ 'https://tutam9-frontend-gray.vercel.app/', '*'],
   credentials: true
 }));
 app.use(express.json());
